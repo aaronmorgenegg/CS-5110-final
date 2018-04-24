@@ -6,9 +6,11 @@ import random
 
 # Parameters/Constants to manipulate the program
 
-RATIO_AD = .8 # Ratio of agents that start as Always Defect
-NUMBER_OF_GAMES = 10 # number of games agents will play for each round
-REWIRING_PROBABILITY = .02 # chance for agents to be connected
+RATIO_AD = .85 # Ratio of agents that start as Always Defect
+NUMBER_OF_GAMES = 7 # number of games agents will play for each round
+REWIRING_PROBABILITY = .05 # chance for agents to be connected
+SOCIETY_SIZE = 300
+NUMBER_OF_GENERATIONS = 5
 
 
 class Agent:
@@ -102,7 +104,7 @@ class Society:
 
         self.UpdateStrategies()
 
-    def RunConnectedIteratedPrisonersDillemma(self):
+    def RunConnectedIteratedPrisonersDilemma(self):
         self.ResetPayoffs()
         for i in range(len(self.agents) - 1):
             for j in range(i + 1, len(self.agents)):
@@ -117,6 +119,14 @@ class Society:
                                                                                self.MeasureDiscontentness()))
         for i in range(num_trials):
             self.RunIteratedPrisonersDilemma()
+            print('Trial({}) Trust({}/{}) Content({}) Discontent({})'.format(i, self.MeasureTrust(), len(self.agents), self.MeasureContentness(), self.MeasureDiscontentness()))
+
+    def RunConnectedEvolutionaryIteratedPrisonersDilemma(self, num_trials):
+        print('Pre Trial Trust({}/{}) Content({}) Discontent({})'.format(self.MeasureTrust(), len(self.agents),
+                                                                               self.MeasureContentness(),
+                                                                               self.MeasureDiscontentness()))
+        for i in range(num_trials):
+            self.RunConnectedIteratedPrisonersDilemma()
             print('Trial({}) Trust({}/{}) Content({}) Discontent({})'.format(i, self.MeasureTrust(), len(self.agents), self.MeasureContentness(), self.MeasureDiscontentness()))
 
     def ResetPayoffs(self):
@@ -174,5 +184,5 @@ class Society:
         return society_str
 
 if __name__ == '__main__':
-    my_society = Society(100)
-    my_society.RunEvolutionaryIteratedPrisonersDilemma(10)
+    my_society = Society(SOCIETY_SIZE)
+    my_society.RunConnectedEvolutionaryIteratedPrisonersDilemma(NUMBER_OF_GENERATIONS)
