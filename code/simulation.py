@@ -4,7 +4,11 @@
 
 import random
 
+# Parameters/Constants to manipulate the program
+
 RATIO_AD = .8 # Ratio of agents that start as Always Defect
+NUMBER_OF_GAMES = 7 # number of games agents will play for each round
+
 
 class Agent:
     def __init__(self):
@@ -26,6 +30,9 @@ class Agent:
             return False
         else:
             return True
+
+    def ResetPayoff(self):
+        self.payoff = 0
 
 def PrisonersDilemma(agentA, agentB):
     if agentA.Play() is True and agentB.Play() is True:
@@ -49,8 +56,37 @@ def PrisonersDilemma(agentA, agentB):
         agentB.last_result = False
         return (1,1)
 
+class Society:
+    def __init__(self, num_agents):
+        self.agents = self.GetStartingAgents(num_agents)
+
+    def GetStartingAgents(self, num_agents):
+        agents = []
+        for i in range(num_agents):
+            agents.append(Agent())
+        return agents
+
+    def RunIteratedPrisonersDilemma(self):
+        for i in range(len(self.agents)-1):
+            for j in range(i+1, len(self.agents)):
+                for k in range(0, NUMBER_OF_GAMES):
+                    result = PrisonersDilemma(self.agents[i], self.agents[j])
+                    self.agents[i].payoff += result[0]
+                    self.agents[j].payoff += result[1]
+
+    def ResetPayoffs(self):
+        for agent in self.agents:
+            agent.ResetPayoff()
+
+    def __str__(self):
+        society_str = '--- Society ---\n'
+        for i in range(len(self.agents)):
+            society_str += 'Agent: {}, Trust: {}, Payoff: {}\n'.format(i, self.agents[i].trust, self.agents[i].payoff)
+
+        return society_str
+
 if __name__ == '__main__':
-    agentA = Agent()
-    agentB = Agent()
-    for i in range(5):
-        print(PrisonersDilemma(agentA, agentB))
+    my_society = Society(10)
+    print(my_society)
+    my_society.RunIteratedPrisonersDilemma()
+    print(my_society)
