@@ -6,9 +6,9 @@ import random
 
 # Parameters/Constants to manipulate the program
 
-RATIO_AD = .9 # Ratio of agents that start as Always Defect
+RATIO_AD = .8 # Ratio of agents that start as Always Defect
 NUMBER_OF_GAMES = 10 # number of games agents will play for each round
-REWIRING_PROBABILITY = .2 # chance for agents to be connected
+REWIRING_PROBABILITY = .02 # chance for agents to be connected
 
 
 class Agent:
@@ -102,6 +102,23 @@ class Society:
 
         self.UpdateStrategies()
 
+    def RunConnectedIteratedPrisonersDillemma(self):
+        self.ResetPayoffs()
+        for i in range(len(self.agents) - 1):
+            for j in range(i + 1, len(self.agents)):
+                if i in self.connections[j] and j in self.connections[i]:
+                    IteratedPrisonersDilemma(self.agents[i], self.agents[j])
+
+        self.UpdateStrategies()
+
+    def RunEvolutionaryIteratedPrisonersDilemma(self, num_trials):
+        print('Pre Trial Trust({}/{}) Content({}) Discontent({})'.format(self.MeasureTrust(), len(self.agents),
+                                                                               self.MeasureContentness(),
+                                                                               self.MeasureDiscontentness()))
+        for i in range(num_trials):
+            self.RunIteratedPrisonersDilemma()
+            print('Trial({}) Trust({}/{}) Content({}) Discontent({})'.format(i, self.MeasureTrust(), len(self.agents), self.MeasureContentness(), self.MeasureDiscontentness()))
+
     def ResetPayoffs(self):
         for agent in self.agents:
             agent.ResetPayoff()
@@ -114,8 +131,40 @@ class Society:
 
         return count
 
+    def MeasureContentness(self):
+        count = 0
+        for agent in self.agents:
+            count += agent.content
+
+        return count
+
+    def MeasureDiscontentness(self):
+        count = 0
+        for agent in self.agents:
+            count += agent.discontent
+
+        return count
+
     def UpdateStrategies(self):
-        pass
+        # getting new strategies
+        new_strategies =[]
+        for i in range(len(self.agents)):
+            max_connected_payoff = 0
+            best_strategy = self.agents[i].trust
+            for connection in self.connections[i]:
+                if self.agents[connection].payoff > max_connected_payoff:
+                    max_connected_payoff = self.agents[connection].payoff
+                    best_strategy = self.agents[connection].trust
+            new_strategies.append(best_strategy)
+
+        # updating strategies and contentness
+        for i in range(len(self.agents)):
+            if self.agents[i].trust != new_strategies[i]:
+                self.agents[i].trust = new_strategies[i]
+                if new_strategies[i] == False:
+                    self.agents[i].discontent += 1
+                else:
+                    self.agents[i].content += 1
 
     def __str__(self):
         society_str = '--- Society ---\n'
@@ -126,5 +175,4 @@ class Society:
 
 if __name__ == '__main__':
     my_society = Society(100)
-    my_society.RunIteratedPrisonersDilemma()
-    print(my_society)
+    my_society.RunEvolutionaryIteratedPrisonersDilemma(10)
