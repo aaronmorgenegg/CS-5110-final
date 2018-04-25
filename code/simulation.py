@@ -6,11 +6,12 @@ import random
 
 # Parameters/Constants to manipulate the program
 
-RATIO_AD = .85 # Ratio of agents that start as Always Defect
-NUMBER_OF_GAMES = 7 # number of games agents will play for each round
-REWIRING_PROBABILITY = .05 # chance for agents to be connected
-SOCIETY_SIZE = 300
-NUMBER_OF_GENERATIONS = 5
+RATIO_AD = .80 # Ratio of agents that start as Always Defect
+NUMBER_OF_GAMES = 6 # number of games agents will play for each round
+CONNECTION_PROBABILITY = .01 # chance for agents to be connected
+SOCIETY_SIZE = 500
+NUMBER_OF_GENERATIONS = 10
+NUMBER_OF_SOCIETIES = 100
 
 
 class Agent:
@@ -90,7 +91,7 @@ class Society:
 
         for i in range(len(self.agents)-1):
             for j in range(i+1, len(self.agents)):
-                if(random.random() <= REWIRING_PROBABILITY):
+                if(random.random() <= CONNECTION_PROBABILITY):
                     if j not in connections[i]: connections[i].append(j)
                     if i not in connections[j]: connections[j].append(i)
 
@@ -122,12 +123,11 @@ class Society:
             print('Trial({}) Trust({}/{}) Content({}) Discontent({})'.format(i, self.MeasureTrust(), len(self.agents), self.MeasureContentness(), self.MeasureDiscontentness()))
 
     def RunConnectedEvolutionaryIteratedPrisonersDilemma(self, num_trials):
-        print('Pre Trial Trust({}/{}) Content({}) Discontent({})'.format(self.MeasureTrust(), len(self.agents),
-                                                                               self.MeasureContentness(),
-                                                                               self.MeasureDiscontentness()))
+        print('Pre Trial Trust Ratio({})'.format(self.MeasureTrust()/len(self.agents)))
         for i in range(num_trials):
             self.RunConnectedIteratedPrisonersDilemma()
             print('Trial({}) Trust({}/{}) Content({}) Discontent({})'.format(i, self.MeasureTrust(), len(self.agents), self.MeasureContentness(), self.MeasureDiscontentness()))
+        print('Post Trial Trust Ratio({}) Contentness Ratio({})'.format(self.MeasureTrust() / len(self.agents), round(self.MeasureContentness()/self.MeasureDiscontentness(), 3)))
 
     def ResetPayoffs(self):
         for agent in self.agents:
@@ -184,5 +184,21 @@ class Society:
         return society_str
 
 if __name__ == '__main__':
-    my_society = Society(SOCIETY_SIZE)
-    my_society.RunConnectedEvolutionaryIteratedPrisonersDilemma(NUMBER_OF_GENERATIONS)
+    trust_data = []
+    contentness_data = []
+    for i in range(NUMBER_OF_SOCIETIES):
+        my_society = Society(SOCIETY_SIZE)
+        my_society.RunConnectedEvolutionaryIteratedPrisonersDilemma(NUMBER_OF_GENERATIONS)
+        trust_data.append(my_society.MeasureTrust()/len(my_society.agents))
+        contentness_data.append(round(my_society.MeasureContentness()/my_society.MeasureDiscontentness(), 3))
+
+    trust_data.sort()
+    contentness_data.sort()
+    print('\n---Simulation Complete---')
+    print('Number of Societies Tested: {}'.format(NUMBER_OF_SOCIETIES))
+    print('  Trust Data: {}'.format(trust_data))
+    print('    Mean Trust Ratio: {}'.format(round(sum(trust_data)/len(trust_data), 3)))
+    print('    Median Trust Ratio: {}'.format(trust_data[int(len(trust_data)/2)]))
+    print('  Contentness Data: {}'.format(contentness_data))
+    print('    Mean Contentness Ratio: {}'.format(sum(contentness_data)/len(contentness_data)))
+    print('    Median Contentness Ratio: {}'.format(contentness_data[int(len(contentness_data)/2)]))
