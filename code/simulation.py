@@ -187,6 +187,7 @@ if __name__ == '__main__':
     trust_data = []
     contentness_data = []
     for i in range(NUMBER_OF_SOCIETIES):
+        print('===Society ({})==='.format(i))
         my_society = Society(SOCIETY_SIZE)
         my_society.RunConnectedEvolutionaryIteratedPrisonersDilemma(NUMBER_OF_GENERATIONS)
         trust_data.append(my_society.MeasureTrust()/len(my_society.agents))
@@ -194,11 +195,11 @@ if __name__ == '__main__':
 
     trust_data.sort()
     contentness_data.sort()
-    print('\n---Simulation Complete---')
+    print('\n===Simulation Complete===\n')
     print('Number of Societies Tested: {}'.format(NUMBER_OF_SOCIETIES))
     print('  Trust Data: {}'.format(trust_data))
     print('    Mean Trust Ratio: {}'.format(round(sum(trust_data)/len(trust_data), 3)))
     print('    Median Trust Ratio: {}'.format(trust_data[int(len(trust_data)/2)]))
     print('  Contentness Data: {}'.format(contentness_data))
-    print('    Mean Contentness Ratio: {}'.format(sum(contentness_data)/len(contentness_data)))
+    print('    Mean Contentness Ratio: {}'.format(round(sum(contentness_data)/len(contentness_data), 3)))
     print('    Median Contentness Ratio: {}'.format(contentness_data[int(len(contentness_data)/2)]))
