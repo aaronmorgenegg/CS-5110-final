@@ -9,9 +9,9 @@ import random
 RATIO_AD = .8 # Ratio of agents that start as Always Defect
 NUMBER_OF_GAMES = 6 # number of games agents will play for each round
 CONNECTION_PROBABILITY = .01 # chance for agents to be connected
-SOCIETY_SIZE = 500
-NUMBER_OF_GENERATIONS = 10
-NUMBER_OF_SOCIETIES = 100
+SOCIETY_SIZE = 500 # Number of agents in each society
+NUMBER_OF_GENERATIONS = 10 # Number of evolutionary generations for each society's iterated games
+NUMBER_OF_SOCIETIES = 100 # Number of societies to test and aggregate
 
 
 class Agent:
