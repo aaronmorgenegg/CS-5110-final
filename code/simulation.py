@@ -6,7 +6,7 @@ import random
 
 # Parameters/Constants to manipulate the program
 
-RATIO_AD = .80 # Ratio of agents that start as Always Defect
+RATIO_AD = .8 # Ratio of agents that start as Always Defect
 NUMBER_OF_GAMES = 6 # number of games agents will play for each round
 CONNECTION_PROBABILITY = .01 # chance for agents to be connected
 SOCIETY_SIZE = 500
